@@ -1,11 +1,14 @@
+#ifdef CONFIG_NOKIA5110
+#include <LCD5110_Graph.h>
+
 //nokia 5110
-char AIR_MONITOR_VERSION[]="v1.0";
+char AIR_MONITOR_VERSION[] PROGMEM ="v1.0";
 
 /******************************
  * Pin define 
  * 5110  ------------------  Arduino
- * RST --------------------> PIN 8
- * CE  --------------------> PIN 9
+ * RST --------------------> PIN 9
+ * CE  --------------------> PIN 8
  * DC  --------------------> PIN 7
  * DIN --------------------> PIN 6
  * CLK --------------------> PIN 5
@@ -16,8 +19,8 @@ char AIR_MONITOR_VERSION[]="v1.0";
  #define nokia5110_PIN_CLK    5
  #define nokia5110_PIN_DIN    6
  #define nokia5110_PIN_DC     7
- #define nokia5110_PIN_RST    8
- #define nokia5110_PIN_CE     9
+ #define nokia5110_PIN_CE     8
+ #define nokia5110_PIN_RST    9
  
  LCD5110 myGLCD(nokia5110_PIN_CLK, nokia5110_PIN_DIN,
    nokia5110_PIN_DC, nokia5110_PIN_RST, nokia5110_PIN_CE);
@@ -90,4 +93,18 @@ void nokia5110_show_pm25(int pm25)
   myGLCD.printNumI(pm25, 40, 15);
   myGLCD.update();
 }
+#else
+void nokia5110_setup(void)
+{
+}
+
+void nokia5110_show_temp(int temperature, int humidity)
+{
+}
+
+void nokia5110_show_pm25(int pm25)
+{
+}
+
+#endif
 
