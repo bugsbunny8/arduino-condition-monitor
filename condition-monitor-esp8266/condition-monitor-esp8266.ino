@@ -14,9 +14,9 @@
 
 #define CONFIG_NOKIA5110  1
 
-//#define CONFIG_YEELINK 1
+#define CONFIG_YEELINK 1
 //#define CONFIG_LEWEE 1
-#define CONFIG_THINGSPEAK  1
+//#define CONFIG_THINGSPEAK  1
 
 /*************************************************
  * include file

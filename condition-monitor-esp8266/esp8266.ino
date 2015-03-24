@@ -201,6 +201,14 @@ int esp8266SendF(const __FlashStringHelper * str, bool isSend)
   return strlen_P((const prog_char *)(str));
 }
 
+int esp8266SendlnF(const __FlashStringHelper * str, bool isSend)
+{
+  if(isSend){
+    ESP8266_SERIAL_PRINTLN(str);
+  }
+  return strlen_P((const prog_char *)(str));
+}
+
 int esp8266SendStr(char * str, bool isSend)
 {
   if(isSend){
@@ -224,13 +232,13 @@ int esp8266SendInt(int val, bool isSend)
  * which might generate enormous SRAM memory usage! */
 #ifdef CONFIG_YEELINK
 /* SEND or GetString Length*/
-int esp8266SendGetLenYeelink(bool isSend, char * deviceId, int sensorId, int Data)
+int esp8266SendGetLenYeelink(bool isSend, const __FlashStringHelper * deviceId, int sensorId, int Data)
 {
   int httpCmdLen = 0;
   int cmdLength = 10 + getIntLength(Data);
 
   httpCmdLen = esp8266SendF(F("POST /v1.0/device/"), isSend);
-  httpCmdLen += esp8266SendStr(deviceId, isSend);
+  httpCmdLen += esp8266SendF(deviceId, isSend);
   httpCmdLen += esp8266SendF(F("/sensor/"), isSend);
   httpCmdLen += esp8266SendInt(sensorId, isSend);
   httpCmdLen += esp8266SendF(F("/datapoints"), isSend);
@@ -250,7 +258,7 @@ int esp8266SendGetLenYeelink(bool isSend, char * deviceId, int sensorId, int Dat
   httpCmdLen += esp8266SendF(F("\r\n"), isSend);
   httpCmdLen += esp8266SendF(F("{\"value\":"), isSend);
   httpCmdLen += esp8266SendInt(Data, isSend);
-  httpCmdLen += esp8266SendF(F("}\r\n"), isSend);
+  httpCmdLen += esp8266SendlnF(F("}\r\n"), isSend);
   
   return httpCmdLen;
 }
@@ -263,26 +271,26 @@ int esp8266SendGetLenLewee(bool isSend, const __FlashStringHelper * deviceId, in
   int cmdLength = 10 + getIntLength(Data);
 
   httpCmdLen = esp8266SendF(F("POST /api/V1/gateway/UpdateSensors/"), isSend);
-  httpCmdLen += esp8266SendStr(deviceId, isSend);
-  httpCmdLen = esp8266SendF(F(" HTTP/1.1\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("Host: www.lewei50.com\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("Accept: *"), isSend);
-  httpCmdLen = esp8266SendF(F("/"), isSend);
-  httpCmdLen = esp8266SendF(F("*\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("userkey: "), isSend);
-  httpCmdLen = esp8266SendF(LEWEE_API_KEY, isSend);
-  httpCmdLen = esp8266SendF(F("\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("Content-Length: "), isSend);
+  httpCmdLen += esp8266SendF(deviceId, isSend);
+  httpCmdLen += esp8266SendF(F(" HTTP/1.1\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("Host: www.lewei50.com\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("Accept: *"), isSend);
+  httpCmdLen += esp8266SendF(F("/"), isSend);
+  httpCmdLen += esp8266SendF(F("*\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("userkey: "), isSend);
+  httpCmdLen += esp8266SendF(LEWEE_API_KEY, isSend);
+  httpCmdLen += esp8266SendF(F("\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("Content-Length: "), isSend);
   httpCmdLen += esp8266SendInt(cmdLength, isSend);
-  httpCmdLen = esp8266SendF(F("\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("Content-Type: application/x-www-form-urlencoded\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("Connection: close\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("\r\n"), isSend);
-  httpCmdLen = esp8266SendF(F("[{\"Name\":\""), isSend);
+  httpCmdLen += esp8266SendF(F("\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("Content-Type: application/x-www-form-urlencoded\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("Connection: close\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("\r\n"), isSend);
+  httpCmdLen += esp8266SendF(F("[{\"Name\":\""), isSend);
   httpCmdLen += esp8266SendInt(sensorId, isSend);
-  httpCmdLen = esp8266SendF(F("\",\"Value\":\""), isSend);
+  httpCmdLen += esp8266SendF(F("\",\"Value\":\""), isSend);
   httpCmdLen += esp8266SendInt(Data, isSend);
-  httpCmdLen = esp8266SendF(F("\"}]\r\n"), isSend);
+  httpCmdLen += esp8266SendlnF(F("\"}]\r\n"), isSend);
 
   return httpCmdLen;
 }
@@ -295,8 +303,9 @@ int esp8266SendGetLenThingspeak(bool isSend, const __FlashStringHelper * deviceI
 
   httpCmdLen = esp8266SendF(THINGSPEAK_UPDATE, isSend);
   httpCmdLen += esp8266SendInt(sensorId, isSend);
-  httpCmdLen = esp8266SendF(F("="), isSend);
+  httpCmdLen += esp8266SendF(F("="), isSend);
   httpCmdLen += esp8266SendInt(Data, isSend);
+  httpCmdLen += esp8266SendlnF(F("\r\n"), isSend);
 
   return httpCmdLen;
 }
